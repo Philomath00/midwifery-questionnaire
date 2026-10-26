@@ -142,6 +142,8 @@
   .thanks h2{font-size:30px;margin-bottom:12px}
   .thanks p{color:var(--muted);max-width:480px;margin:0 auto 10px}
   .thanks .tick-soft{background:var(--soft)}
+  .thanks-actions{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:22px!important}
+  .thanks-actions .btn{text-decoration:none;display:inline-block}
   .small-note{font-size:13px!important;color:var(--muted-2)!important;margin-top:14px!important}
   .linklike{all:unset;cursor:pointer;text-decoration:underline;color:var(--muted)}
   .linklike:focus-visible{outline:3px solid var(--lime-strong)}
@@ -535,7 +537,7 @@ async function submit(){
   } catch(err) {
     banner.className = "banner error";
     banner.innerHTML = "Sorry, your answers didn’t send. Please check your internet connection and try again. If it keeps happening, use <a href='#' id='dlLink'>Download a copy</a> and email it to us.";
-    document.getElementById("dlLink").addEventListener("click", e => { e.preventDefault(); downloadCopy(); });
+    document.getElementById("dlLink").addEventListener("click", e => { e.preventDefault(); downloadPdf(); });
     nextBtn.disabled = false; nextBtn.textContent = "Try sending again";
   }
 }
@@ -543,13 +545,114 @@ function notConfigured(){
   const banner = document.getElementById("banner");
   banner.className = "banner error";
   banner.innerHTML = "This form isn’t connected to an email address yet (see the CONFIG section in the file). For now you can <a href='#' id='dlLink'>download a copy of your answers</a>.";
-  document.getElementById("dlLink").addEventListener("click", e => { e.preventDefault(); downloadCopy(); });
+  document.getElementById("dlLink").addEventListener("click", e => { e.preventDefault(); downloadPdf(); });
 }
 function downloadCopy(){
   const blob = new Blob([plainSummary()], {type:"text/plain"});
   const a = el("a",{href:URL.createObjectURL(blob), download:`questionnaire-${(state.org_name||"answers").replace(/[^a-z0-9]+/gi,"-").toLowerCase()}.txt`});
   document.body.appendChild(a); a.click(); a.remove();
 }
+/* ---------- branded PDF copy of the answers (made in the browser, nothing is uploaded) ---------- */
+function loadJsPDF(){
+  return new Promise((resolve, reject) => {
+    if (window.jspdf) return resolve(window.jspdf);
+    const s = document.createElement("script");
+    s.src = "https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js";
+    s.onload = () => window.jspdf ? resolve(window.jspdf) : reject(new Error("PDF library missing"));
+    s.onerror = () => reject(new Error("PDF library failed to load"));
+    document.head.appendChild(s);
+  });
+}
+async function logoDataUrl(){
+  try {
+    const r = await fetch("/assets/eb-logo.png"); if (!r.ok) return null;
+    const b = await r.blob();
+    return await new Promise(ok => { const f = new FileReader(); f.onload = () => ok(f.result); f.onerror = () => ok(null); f.readAsDataURL(b); });
+  } catch(e) { return null; }
+}
+function pdfSafe(s){
+  return String(s).replace(/→/g,"->").replace(/[“”]/g,'"').replace(/[‘’]/g,"'").replace(/[–—]/g,"-").replace(/…/g,"...").replace(/[^\x0A\x20-\x7E\xA0-\xFF]/g,"");
+}
+async function downloadPdf(btn){
+  const label = btn ? btn.textContent : "";
+  if (btn) { btn.disabled = true; btn.textContent = "Preparing your PDF…"; }
+  try {
+    const { jsPDF } = await loadJsPDF();
+    const logo = await logoDataUrl();
+    const doc = new jsPDF({ unit: "pt", format: "a4" });
+    const W = 595.28, H = 841.89, M = 50, CW = W - 2 * M, BOTTOM = H - 64;
+    const INK = [14,15,18], MUTED = [110,114,124], LIGHT = [154,157,166], LIME = [196,245,126], LINE = [227,228,236], SOFT = [244,244,248];
+    let y = 56;
+    const newPage = () => { doc.addPage(); y = 64; };
+    const need = h => { if (y + h > BOTTOM) newPage(); };
+
+    // Header
+    doc.setFillColor(...LIME); doc.rect(M, 30, 46, 4, "F");
+    if (logo) { doc.addImage(logo, "PNG", M, y, 46, 46 * 120 / 154); y += 36 + 26; } else { y += 10; }
+    doc.setFont("helvetica", "normal"); doc.setFontSize(9.5); doc.setTextColor(...MUTED);
+    doc.text("A copy of your answers", M, y); y += 22;
+    doc.setFont("helvetica", "bold"); doc.setFontSize(22); doc.setTextColor(...INK);
+    doc.text(pdfSafe(document.title.replace(/\s*–\s*Questionnaire$/, "")), M, y); y += 22;
+
+    // Summary panel
+    const when = new Date().toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
+    const meta = [["Practice", state.org_name || "—"], ["Name", state.contact_name || "—"], ["Email", state.contact_email || "—"], ["Date", when]];
+    const panelH = 18 + meta.length * 16 + 8;
+    doc.setFillColor(...SOFT); doc.roundedRect(M, y, CW, panelH, 10, 10, "F");
+    let py = y + 22;
+    meta.forEach(([k, v]) => {
+      doc.setFont("helvetica", "bold"); doc.setFontSize(9.5); doc.setTextColor(...INK); doc.text(k, M + 16, py);
+      doc.setFont("helvetica", "normal"); doc.setTextColor(...MUTED); doc.text(pdfSafe(v).slice(0, 90), M + 90, py);
+      py += 16;
+    });
+    y += panelH + 26;
+
+    // Questions and answers
+    let lastSection = "";
+    collect().forEach(r => {
+      if (r.section !== lastSection) {
+        need(60);
+        if (lastSection) y += 8;
+        doc.setFont("helvetica", "bold"); doc.setFontSize(13.5); doc.setTextColor(...INK);
+        doc.text(pdfSafe(r.section), M, y); y += 8;
+        doc.setDrawColor(...LINE); doc.setLineWidth(0.7); doc.line(M, y, M + CW, y); y += 18;
+        lastSection = r.section;
+      }
+      doc.setFontSize(10.5);
+      doc.setFont("helvetica", "bold");
+      const q = doc.splitTextToSize(pdfSafe(r.question), CW);
+      doc.setFont("helvetica", r.answer ? "normal" : "italic");
+      const a = doc.splitTextToSize(pdfSafe(r.answer || "Not answered"), CW - 12);
+      const blockH = q.length * 14 + 4 + a.length * 14 + 14;
+      need(Math.min(blockH, 120));
+      doc.setFont("helvetica", "bold"); doc.setTextColor(...INK);
+      q.forEach(line => { need(14); doc.text(line, M, y); y += 14; });
+      y += 4;
+      doc.setFont("helvetica", r.answer ? "normal" : "italic"); doc.setTextColor(...(r.answer ? MUTED : LIGHT));
+      const startY = y - 10;
+      a.forEach(line => { need(14); doc.text(line, M + 12, y); y += 14; });
+      doc.setFillColor(...LIME); doc.rect(M, startY, 3, Math.max(y - startY - 10, 10), "F");
+      y += 12;
+    });
+
+    // Footer on every page
+    const pages = doc.getNumberOfPages();
+    for (let i = 1; i <= pages; i++) {
+      doc.setPage(i);
+      doc.setDrawColor(...LINE); doc.setLineWidth(0.6); doc.line(M, H - 44, W - M, H - 44);
+      doc.setFont("helvetica", "normal"); doc.setFontSize(8); doc.setTextColor(...LIGHT);
+      doc.text(pdfSafe(PAGE.label).toUpperCase(), M, H - 30);
+      doc.text(`Page ${i} of ${pages}`, W - M, H - 30, { align: "right" });
+    }
+    const slug = (state.org_name || "my-answers").replace(/[^a-z0-9]+/gi, "-").replace(/^-|-$/g, "").toLowerCase() || "my-answers";
+    doc.save(`${slug}-${CONFIG.part === "part1" ? "part-1" : "part-2"}-answers.pdf`);
+  } catch(e) {
+    downloadCopy();
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = label; }
+  }
+}
+
 function showThanks(){
   document.getElementById("progress").style.display = "none";
   document.getElementById("topbar").style.display = "none";
@@ -563,21 +666,22 @@ function showThanks(){
       <div class="tick"><svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="#16220A" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
       <h2>Part 1 sent — thank you${first}!</h2>
       <p>Next is <strong>Part 2: the details</strong> of how you’ll work. It takes about 15–20 minutes, and you can stop and come back at any time.</p>
-      <p style="margin-top:22px"><a class="btn btn-primary" id="startPart2" href="/part-2/#continue" style="text-decoration:none;display:inline-block">Start Part 2</a></p>
-      <p class="small-note">Opening Part 2 in <span id="countdown">6</span> seconds… <button type="button" class="linklike" id="stayHere">Stay on this page</button></p>
-      <p class="small-note"><button type="button" class="linklike" id="keepCopy">Download a copy of my Part 1 answers</button></p>
+      <p class="thanks-actions"><a class="btn btn-primary" id="startPart2" href="/part-2/#continue">Start Part 2</a><button type="button" class="btn btn-ghost" id="keepCopy">Download my answers (PDF)</button></p>
+      <p class="small-note" id="countdownNote">Opening Part 2 in <span id="countdown">10</span> seconds… <button type="button" class="linklike" id="stayHere">Stay on this page</button></p>
     </div>`;
-    document.getElementById("keepCopy").addEventListener("click", downloadCopy);
-    let left = 6;
+    let left = 10;
     const timer = setInterval(() => {
       left -= 1;
       const c = document.getElementById("countdown"); if (c) c.textContent = String(left);
       if (left <= 0) { clearInterval(timer); location.href = "/part-2/#continue"; }
     }, 1000);
-    document.getElementById("stayHere").addEventListener("click", e => {
+    const stopTimer = () => {
       clearInterval(timer);
-      e.target.closest("p").textContent = "Whenever you’re ready, press Start Part 2.";
-    });
+      const n = document.getElementById("countdownNote");
+      if (n) n.textContent = "Whenever you’re ready, press Start Part 2.";
+    };
+    document.getElementById("stayHere").addEventListener("click", stopTimer);
+    document.getElementById("keepCopy").addEventListener("click", e => { stopTimer(); downloadPdf(e.currentTarget); });
     try { localStorage.removeItem(STORE_KEY); localStorage.removeItem(STORE_KEY+"-step"); } catch(e){}
     window.scrollTo({top:0, behavior:"smooth"});
     return;
@@ -588,9 +692,9 @@ function showThanks(){
       <h2>Thank you${state.contact_name ? ", " + esc(state.contact_name.split(" ")[0]) : ""}!</h2>
       <p>Your answers have been sent. We’ll read them carefully and be in touch within two working days to arrange a short call.</p>
       <p>If you have paper or digital forms you use today, please email us blank copies — they really help.</p>
-      <p style="margin-top:20px"><button type="button" class="btn btn-ghost" id="keepCopy">Download a copy for my records</button></p>
+      <p class="thanks-actions"><button type="button" class="btn btn-primary" id="keepCopy">Download my answers (PDF)</button></p>
     </div>`;
-  document.getElementById("keepCopy").addEventListener("click", downloadCopy);
+  document.getElementById("keepCopy").addEventListener("click", e => downloadPdf(e.currentTarget));
   document.querySelectorAll("#navlist li").forEach(li => li.classList.add("done"));
   try { localStorage.removeItem(STORE_KEY); localStorage.removeItem(STORE_KEY+"-step"); } catch(e){}
   window.scrollTo({top:0, behavior:"smooth"});
