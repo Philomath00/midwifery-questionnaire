@@ -49,6 +49,10 @@
     padding:36px 34px 32px;box-shadow:0 1px 0 #fff inset,0 40px 70px -40px rgba(24,26,44,.25)}
   @media (max-width:560px){.shell{padding:20px 12px 32px}.card{padding:26px 18px 22px;border-radius:28px}}
 
+  /* Logo */
+  .logo{display:block;height:40px;width:auto;margin:0 0 24px}
+  @media (max-width:560px){.logo{height:34px;margin-bottom:20px}}
+
   /* Top bar + progress */
   .topbar{display:flex;justify-content:space-between;align-items:center;gap:12px;font-size:14px;color:var(--muted)}
   .savednote{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--muted-2)}
@@ -153,6 +157,7 @@
 
 <main class="shell">
   <div class="card">
+    <img src="/assets/eb-logo.png" alt="EB" class="logo" width="52" height="40">
     <div class="topbar" id="topbar">
       <span id="progressLabel">Step 1</span>
       <span class="savednote" id="savedNote"><span class="dot"></span>Saved on this device</span>
