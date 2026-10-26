@@ -1,0 +1,597 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Part 2: The Details – Questionnaire</title>
+<!--
+  =====================================================================
+  HOW TO CONNECT THE "SEND" BUTTON TO YOUR EMAIL  (edit CONFIG below)
+  =====================================================================
+  Option A – FormSubmit (easiest, no account):
+    1. Set provider: "formsubmit" and email: "you@yourdomain.co.uk" (Gmail works too).
+    2. Upload this file to your website (or open it once) and send ONE test submission.
+    3. FormSubmit emails you an activation link – click it. Done.
+       Tip: after activating, FormSubmit gives you a random alias (e.g. a1b2c3...).
+       Put that in "email" instead of your real address to hide it from spam bots.
+
+  Option B – Web3Forms (free account, very reliable):
+    1. Go to web3forms.com, enter your email, and copy the Access Key they send.
+    2. Set provider: "web3forms" and accessKey: "your-key-here".
+
+  Option C – Formspree:
+    1. Create a form at formspree.io and copy the form ID (e.g. "xyzabcd").
+    2. Set provider: "formspree" and formspreeId: "xyzabcd".
+
+  Note: this questionnaire collects business information only – it does NOT
+  ask for any patient details, so a standard form service is appropriate.
+  =====================================================================
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Nunito+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#FAF6F1; --card:#FFFFFF; --ink:#22302F; --muted:#5E6B69; --line:#E6DED4;
+    --primary:#1F5F5B; --primary-dark:#174744; --primary-soft:#E4EFEC;
+    --blush:#F3D9CF; --blush-ink:#8A4A39; --focus:#E0A15E; --error:#B3412E;
+    --radius:16px; --shadow:0 10px 30px rgba(34,48,47,.08);
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 "Nunito Sans",system-ui,-apple-system,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased}
+  h1,h2,h3{font-family:Fraunces,Georgia,serif;font-weight:600;line-height:1.2;margin:0}
+  a{color:var(--primary)}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 16px}
+
+  /* Header */
+  header.hero{background:linear-gradient(160deg,#1F5F5B 0%,#2C7A73 60%,#3B8E85 100%);color:#fff;padding:40px 0 88px;position:relative;overflow:hidden}
+  header.hero::after{content:"";position:absolute;right:-120px;top:-120px;width:360px;height:360px;border-radius:50%;background:rgba(243,217,207,.18)}
+  header.hero::before{content:"";position:absolute;left:-80px;bottom:-140px;width:280px;height:280px;border-radius:50%;background:rgba(255,255,255,.07)}
+  .brandline{display:flex;align-items:center;gap:10px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;font-size:13px;opacity:.9}
+  .brandline svg{width:26px;height:26px}
+  header.hero h1{font-size:clamp(28px,4.4vw,42px);margin:18px 0 10px;max-width:720px}
+  header.hero p{max-width:640px;margin:0;font-size:18px;opacity:.95}
+  .reassure{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
+  .pill{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.25);padding:6px 14px;border-radius:999px;font-size:14px}
+
+  /* Layout */
+  main{margin-top:-56px;position:relative;z-index:2;padding-bottom:64px}
+  .layout{display:grid;grid-template-columns:260px 1fr;gap:24px;align-items:start}
+  @media (max-width:860px){.layout{grid-template-columns:1fr}.sidebar{display:none}}
+
+  .sidebar{position:sticky;top:20px;background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px}
+  .sidebar h3{font-size:15px;font-family:"Nunito Sans",sans-serif;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin:0 0 10px}
+  .navlist{list-style:none;margin:0;padding:0}
+  .navlist button{all:unset;cursor:pointer;display:flex;gap:10px;align-items:center;width:100%;padding:8px 10px;border-radius:10px;font-size:15px;color:var(--muted)}
+  .navlist button:hover{background:var(--primary-soft);color:var(--ink)}
+  .navlist .num{flex:0 0 26px;height:26px;border-radius:50%;display:grid;place-items:center;font-size:13px;font-weight:700;background:#F1ECE5;color:var(--muted)}
+  .navlist li.done .num{background:var(--primary);color:#fff}
+  .navlist li.current button{background:var(--primary-soft);color:var(--ink);font-weight:700}
+  .navlist li.current .num{background:var(--blush);color:var(--blush-ink)}
+  .navlist button:focus-visible{outline:3px solid var(--focus)}
+
+  .card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:28px}
+  @media (max-width:560px){.card{padding:20px 16px}}
+
+  /* Progress */
+  .progress{display:flex;align-items:center;gap:14px;margin-bottom:22px}
+  .progress .bar{flex:1;height:10px;background:#EFE8DF;border-radius:999px;overflow:hidden}
+  .progress .fill{height:100%;width:0;background:linear-gradient(90deg,var(--primary),#3B8E85);border-radius:999px;transition:width .35s ease}
+  .progress .label{font-size:14px;color:var(--muted);white-space:nowrap;font-weight:600}
+
+  .step{display:none;animation:fade .3s ease}
+  .step.active{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  .step-head{margin-bottom:22px}
+  .step-head .eyebrow{color:var(--blush-ink);font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:.08em}
+  .step-head h2{font-size:clamp(24px,3vw,30px);margin:6px 0 8px}
+  .step-head p{margin:0;color:var(--muted)}
+
+  /* Questions */
+  .q{border:0;margin:0 0 26px;padding:0;min-width:0}
+  .q > .qlabel, .q > legend{display:block;font-weight:700;font-size:17px;margin-bottom:4px;padding:0}
+  .req{color:var(--error);margin-left:2px}
+  .optional{font-weight:400;color:var(--muted);font-size:14px;margin-left:6px}
+  .hint{color:var(--muted);font-size:15px;margin:0 0 10px}
+  input[type=text],input[type=email],input[type=tel],input[type=number],input[type=date],textarea,select{
+    width:100%;font:inherit;color:var(--ink);background:#FFFDFB;border:1.5px solid var(--line);border-radius:12px;padding:12px 14px;transition:border-color .15s, box-shadow .15s}
+  textarea{min-height:110px;resize:vertical}
+  input:focus,textarea:focus,select:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 4px rgba(31,95,91,.15)}
+  .q.invalid input,.q.invalid textarea{border-color:var(--error)}
+  .errmsg{display:none;color:var(--error);font-size:14px;margin-top:6px;font-weight:600}
+  .q.invalid .errmsg{display:block}
+
+  .options{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px}
+  .opt{position:relative;display:flex;align-items:flex-start;gap:12px;padding:12px 14px;border:1.5px solid var(--line);border-radius:12px;background:#FFFDFB;cursor:pointer;transition:all .15s;font-size:16px;line-height:1.35}
+  .opt:hover{border-color:#C9BBAA;background:#FFF}
+  .opt input{position:absolute;opacity:0;pointer-events:none}
+  .opt .box{flex:0 0 22px;height:22px;margin-top:1px;border:2px solid #B9AC9C;border-radius:6px;display:grid;place-items:center;background:#fff;transition:all .15s}
+  .opt input[type=radio] + .box{border-radius:50%}
+  .opt .box svg{width:14px;height:14px;opacity:0;transform:scale(.6);transition:all .15s}
+  .opt input:checked + .box{background:var(--primary);border-color:var(--primary)}
+  .opt input:checked + .box svg{opacity:1;transform:none}
+  .opt:has(input:checked){border-color:var(--primary);background:var(--primary-soft)}
+  .opt:has(input:focus-visible){outline:3px solid var(--focus);outline-offset:2px}
+  .other-input{margin-top:10px;display:none}
+  .other-input.show{display:block}
+
+  /* Buttons */
+  .actions{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:28px;padding-top:22px;border-top:1px solid var(--line);flex-wrap:wrap}
+  .btn{font:inherit;font-weight:700;border:0;border-radius:12px;padding:14px 26px;cursor:pointer;transition:all .15s;display:inline-flex;align-items:center;gap:8px}
+  .btn-primary{background:var(--primary);color:#fff}
+  .btn-primary:hover{background:var(--primary-dark)}
+  .btn-ghost{background:transparent;color:var(--primary);border:1.5px solid var(--line)}
+  .btn-ghost:hover{background:var(--primary-soft)}
+  .btn:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+  .btn[disabled]{opacity:.6;cursor:wait}
+  .savednote{font-size:14px;color:var(--muted);display:flex;align-items:center;gap:6px}
+  .savednote .dot{width:8px;height:8px;border-radius:50%;background:#7DB8A5}
+
+  /* In-page subheadings */
+  .subhead{margin:38px 0 20px;padding-top:26px;border-top:1px dashed var(--line)}
+  .subhead h3{font-size:22px;color:var(--primary)}
+  .subhead p{margin:4px 0 0;color:var(--muted);font-size:15px}
+
+  /* Welcome tips */
+  .tips{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin:0 0 26px}
+  .tip{background:var(--primary-soft);border-radius:12px;padding:14px 16px;font-size:15px}
+  .tip strong{display:block;font-size:16px;margin-bottom:2px}
+
+  /* Review */
+  .review-section{border:1.5px solid var(--line);border-radius:14px;margin-bottom:14px;overflow:hidden}
+  .review-section header{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;background:#FBF7F2}
+  .review-section h3{font-size:18px}
+  .review-section dl{margin:0;padding:6px 16px 12px}
+  .review-section dt{font-weight:700;font-size:15px;margin-top:10px}
+  .review-section dd{margin:2px 0 0;color:var(--muted);font-size:15px;white-space:pre-wrap}
+  .review-section dd.empty{font-style:italic;opacity:.7}
+  .linkbtn{all:unset;cursor:pointer;color:var(--primary);font-weight:700;font-size:14px}
+  .linkbtn:focus-visible{outline:3px solid var(--focus)}
+  .callout{background:var(--blush);color:#5A2F24;border-radius:12px;padding:14px 16px;margin:0 0 20px;font-size:15px}
+
+  .banner{display:none;border-radius:12px;padding:14px 16px;margin-top:16px;font-weight:600}
+  .banner.error{display:block;background:#FBE4DF;color:var(--error)}
+
+  /* Thank you */
+  .thanks{text-align:center;padding:30px 10px}
+  .thanks .tick{width:76px;height:76px;margin:0 auto 18px;border-radius:50%;background:var(--primary-soft);display:grid;place-items:center}
+  .thanks h2{font-size:30px;margin-bottom:10px}
+  .thanks p{color:var(--muted);max-width:520px;margin:0 auto 10px}
+  .hp{position:absolute;left:-9999px}
+
+  footer{text-align:center;color:var(--muted);font-size:14px;padding:0 16px 40px}
+
+  @media print{
+    header.hero,.sidebar,.actions,.progress,footer{display:none!important}
+    main{margin:0}.card{box-shadow:none;padding:0}
+    .step{display:block!important}
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="brandline">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-4.4-9.3-9A5.3 5.3 0 0 1 12 6.2 5.3 5.3 0 0 1 21.3 12C19 16.6 12 21 12 21z"/></svg>
+      Part 2 of 2 · The details
+    </div>
+    <h1>Now, the details of how you’ll work</h1>
+    <p>These questions help us design each part of your system. You can stop and come back at any time — your answers are saved on this device.</p>
+    <div class="reassure">
+      <span class="pill">About 15–20 minutes</span>
+      <span class="pill">Answers save as you go</span>
+      <span class="pill">“Not sure” is always fine</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="layout">
+    <aside class="sidebar" aria-label="Sections">
+      <h3>Sections</h3>
+      <ol class="navlist" id="navlist"></ol>
+    </aside>
+
+    <div class="card">
+      <div class="progress" id="progress">
+        <div class="bar"><div class="fill" id="progressFill"></div></div>
+        <div class="label" id="progressLabel">Step 1</div>
+      </div>
+
+      <form id="qform" novalidate>
+        <div id="steps"></div>
+        <!-- spam trap: leave empty -->
+        <input type="text" name="_honey" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
+      </form>
+
+      <div class="actions" id="actions">
+        <button type="button" class="btn btn-ghost" id="backBtn">← Back</button>
+        <span class="savednote" id="savedNote"><span class="dot"></span>Saved on this device</span>
+        <button type="button" class="btn btn-primary" id="nextBtn">Next →</button>
+      </div>
+      <div class="banner" id="banner" role="alert"></div>
+    </div>
+  </div>
+</main>
+
+<footer>Your answers are only sent when you press <strong>Send my answers</strong> on the last page.</footer>
+
+<script>
+/* =========================== SETTINGS =========================== */
+const CONFIG = {
+  provider: "formsubmit",            // "formsubmit" | "web3forms" | "formspree"
+  email: "webmaster@estherbodylawson.com", // for FormSubmit: where answers are sent
+  accessKey: "",                     // for Web3Forms
+  formspreeId: "",                   // for Formspree
+  subject: "Part 2 (details) – Midwifery website & care system",
+  // Supabase: every submission is saved here (visitors can submit, never read)
+  supabaseUrl: "https://gutmdaqopzfmxrvdtfjk.supabase.co",
+  supabaseKey: "sb_publishable_KPIHAskgUCApDZ0LXmopcA_BwfR7kGS",   // publishable key – safe in the browser
+  part: "part2"
+};
+/* ================================================================ */
+
+const NS = ["Not sure"];
+const SECTIONS = [
+  { id:"welcome", title:"About you & your care", intro:"Thanks for completing Part 1! Just confirm who you are, then tell us how care will work day to day.", welcome:true, questions:[
+    {id:"contact_name", label:"Your full name", type:"text", required:true},
+    {id:"contact_email", label:"Your email address", type:"email", required:true},
+    {id:"org_name", label:"Name of your practice", type:"text", required:true},
+    {type:"heading", label:"How care will work", hint:"Bullet points and rough answers are perfect."},
+    {id:"journey", label:"In your own words, what happens from first contact to the end of care?", hint:"For example: “Mum fills in our enquiry form → we call her → booking visit at 10 weeks → visits every 4 weeks…”.", type:"textarea"},
+    {id:"visit_place", label:"Where will most care happen?", type:"radio", options:["Mostly in people’s homes","Mostly in our clinic","A mix of home and clinic","A lot will happen online"]},
+    {id:"shared_with", label:"Who will you share information with?", hint:"Tick all that apply.", type:"checkbox", other:true, options:["GP","Health visitor","Hospital maternity unit","Social services / safeguarding team","Other midwives or doulas","We won’t share information"]},
+    {id:"safeguarding", label:"Will you need to record sensitive concerns (e.g. safeguarding) that only some staff can see?", type:"radio", options:["Yes","No",...NS]},
+    {id:"partner_access", label:"Should partners be able to see anything (with mum’s permission)?", type:"radio", options:["Yes","No",...NS]},
+    {id:"staff_users", label:"How many staff will log in altogether?", type:"number"},
+    {id:"devices", label:"What will staff use to log in?", hint:"Tick all that apply.", type:"checkbox", options:["Laptop or desktop computer","Tablet (e.g. iPad)","Mobile phone","A shared office computer"]},
+    {id:"offline", label:"Will staff sometimes work where there’s no internet signal?", type:"radio", options:["Often","Sometimes","Rarely or never",...NS]}
+  ]},
+  { id:"records", title:"Records & paperwork", intro:"What you’ll need to record. Please don’t include any real patient details here.", questions:[
+    {id:"patient_info", label:"What will you record about each mum?", hint:"Tick all that apply.", type:"checkbox", other:true, options:["Personal and contact details","NHS number","GP details","Medical and pregnancy history","Check-up results (blood pressure, urine, etc.)","Scan reports and images","Birth plan","Notes about the birth","Postnatal checks","Medications and allergies","Mental wellbeing","Consent forms","Letters and referrals","Notes from each visit"]},
+    {id:"baby_info", label:"What will you record about each baby?", hint:"Tick all that apply.", type:"checkbox", other:true, options:["Birth details (time, weight)","Newborn examination","Feeding notes","Weight checks","Screening results (hearing, heel prick)"]},
+    {id:"staff_info", label:"What do you need to keep about your staff?", hint:"Tick all that apply.", type:"checkbox", other:true, options:["Contact details","NMC PIN and revalidation date","DBS check details","Training certificates and expiry dates","Employment contracts","Rota or working hours","Holidays and absence","Emergency contacts","Insurance documents"]},
+    {id:"retention", label:"Did you know maternity records usually need to be kept for 25 years?", hint:"We’ll build the system to keep them safely for that long.", type:"radio", options:["Yes","No – good to know"]},
+    {type:"heading", label:"Policies & paperwork", hint:"New practices often have none of these yet — we can point you to templates."},
+    {id:"policies", label:"Which of these written documents do you have?", hint:"Tick all that apply.", type:"checkbox", options:["Privacy notice for patients","Data protection policy","Record keeping and retention policy","Patient consent forms","Safeguarding policy","Incident reporting process","None of these yet",...NS]},
+    {id:"forms_ready", label:"Do you have the forms you’ll use with mums (booking, consent, visit notes)?", type:"radio", options:["Yes, ready to share","Some of them","Not yet – we’d like help",...NS]}
+  ]},
+  { id:"appointments", title:"Appointments & video calls", intro:"How bookings should work, including secure online video appointments — no apps to download.", questions:[
+    {id:"booking", label:"How should appointments be booked?", type:"radio", options:["Mums book themselves online","Mums request a time, staff confirm it","Only staff book appointments",...NS]},
+    {id:"appt_types", label:"What types of appointment will you have, and how long is each?", hint:"For example: “Booking visit – 60 min, Routine check – 30 min, Postnatal home visit – 45 min”.", type:"textarea"},
+    {id:"calendar", label:"What will staff use as a diary?", type:"radio", options:["Google Calendar","Outlook / Microsoft 365","Paper diary","Not decided yet"]},
+    {id:"reminders", label:"What reminders would help?", hint:"Tick all that apply.", type:"checkbox", options:["Email reminders","Text message reminders","Reminder the day before","Reminder on the day","No reminders needed"]},
+    {id:"messaging", label:"Should mums and midwives be able to message each other in the system?", type:"radio", options:["Yes","No",...NS]},
+    {id:"out_hours", label:"What should happen out of hours or in an emergency?", type:"textarea"},
+    {type:"heading", label:"Video calls"},
+    {id:"video_use", label:"What would you use video calls for?", hint:"Tick all that apply.", type:"checkbox", options:["Check-ins and follow-ups","First consultations","Postnatal support","Feeding support","Group classes","Staff meetings","We don’t need video calls"]},
+    {id:"video_size", label:"Who will usually be on a call?", type:"radio", options:["Just mum and midwife","Mum, partner and midwife","Small groups (up to 10)","Larger groups (10+)"]},
+    {id:"recording", label:"Should calls ever be recorded?", type:"radio", options:["Never","Only with everyone’s permission",...NS]},
+    {id:"video_per_week", label:"Roughly how many video calls a week do you expect?", type:"radio", options:["0–10","10–30","30–60","More than 60"]}
+  ]},
+  { id:"payments", title:"Payments & your website", intro:"How mums will pay you, and what you’d like on the website they’ll see first.", questions:[
+    {id:"pay_how", label:"How will patients pay?", hint:"Tick all that apply.", type:"checkbox", other:true, options:["Pay per appointment","Packages (e.g. full antenatal care)","Deposits","Monthly instalments","Gift vouchers","Insurance or employer pays","Bank transfer after an invoice","Card machine in person"]},
+    {id:"prices", label:"What will your main prices or packages be?", hint:"A rough list is fine.", type:"textarea"},
+    {id:"refunds", label:"What will your cancellation and refund policy be?", type:"textarea"},
+    {id:"accounting", label:"What will you use for your accounts?", type:"radio", options:["Xero","QuickBooks","Sage","FreeAgent","A spreadsheet","Our accountant handles it","Not decided yet"]},
+    {id:"receipts", label:"What do you need after a payment?", hint:"Tick all that apply.", type:"checkbox", options:["Automatic receipts by email","Invoices with our practice details","VAT shown on invoices","Ability to refund from the system"]},
+    {type:"heading", label:"Your website"},
+    {id:"site_pages", label:"Which pages would you like?", hint:"Tick all that apply.", type:"checkbox", other:true, options:["Home","About us / our team","Services","Prices","Book an appointment","Classes and events","Blog or news","Frequently asked questions","Reviews / testimonials","Contact us","Careers"]},
+    {id:"writer", label:"Who will write the words for the website?", type:"radio", options:["We will","We’d like you to write them","We’ll do it together",...NS]},
+    {id:"sites_liked", label:"Are there any websites you like the look of?", hint:"They can be from any industry. Tell us what you like about them.", type:"textarea"},
+    {id:"languages", label:"Do you need the website in any language other than English?", type:"text"}
+  ]},
+  { id:"support", title:"Training & support", intro:"Almost done! How we’ll help your team get started and keep things running.", questions:[
+    {id:"testers", label:"How many staff could help test the system before launch?", type:"number"},
+    {id:"training", label:"How would your team like to be trained?", type:"radio", options:["A live training session","Short video guides","A written guide","A bit of everything"]},
+    {id:"support", label:"After launch, what support would you like?", hint:"Tick all that apply.", type:"checkbox", options:["Quick fixes if something goes wrong","Regular security updates","Help adding new features","Phone support","Email support"]},
+    {id:"nhs_contracts", label:"Do you plan to work with the NHS in future?", type:"radio", options:["Yes","Maybe","No",...NS]},
+    {id:"anything_else", label:"Is there anything else you’d like us to know?", type:"textarea"}
+  ]},
+  { id:"review", title:"Check & send", review:true }
+];
+
+/* ---------- state ---------- */
+const STORE_KEY = "midwife-q-part2";
+let state = {}, current = 0;
+try { state = JSON.parse(localStorage.getItem(STORE_KEY) || "{}") || {}; } catch(e){ state = {}; }
+function save(){
+  try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch(e){}
+}
+
+const tickSvg = '<svg viewBox="0 0 16 16" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.2 3L13 4.5"/></svg>';
+const dotSvg  = '<svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="4" fill="#fff"/></svg>';
+
+function el(tag, attrs={}, html){ const e=document.createElement(tag); for(const k in attrs){ if(k==="class") e.className=attrs[k]; else e.setAttribute(k,attrs[k]); } if(html!==undefined) e.innerHTML=html; return e; }
+function esc(s){ return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+
+/* ---------- render ---------- */
+const stepsEl = document.getElementById("steps");
+const navEl = document.getElementById("navlist");
+
+SECTIONS.forEach((s, i) => {
+  const step = el("section", {class:"step", "data-index":i, "aria-labelledby":"h-"+s.id});
+  const head = el("div", {class:"step-head"});
+  head.innerHTML = `<div class="eyebrow">Step ${i+1} of ${SECTIONS.length}</div><h2 id="h-${s.id}" tabindex="-1">${esc(s.title)}</h2>${s.intro?`<p>${esc(s.intro)}</p>`:""}`;
+  step.appendChild(head);
+
+  if (s.welcome) {
+    const tips = el("div",{class:"tips"});
+    tips.innerHTML = `
+      <div class="tip"><strong>Take your time</strong>Your answers are saved on this device, so you can stop and come back later.</div>
+      <div class="tip"><strong>Short answers are fine</strong>A few words or bullet points are perfect.</div>
+      <div class="tip"><strong>No patient details</strong>Please don’t include any real patient names or information.</div>`;
+    step.appendChild(tips);
+  }
+
+  if (s.review) {
+    step.appendChild(el("div",{class:"callout"},"<strong>Nearly there!</strong> Have a quick look below. Tap <em>Edit</em> to change anything. If you use any paper or digital forms today (booking forms, consent forms, visit notes), please email us blank copies after sending — they help a lot."));
+    step.appendChild(el("div",{id:"reviewBody"}));
+  } else {
+    s.questions.forEach(q => step.appendChild(q.type==="heading" ? renderHeading(q) : renderQuestion(q)));
+  }
+  stepsEl.appendChild(step);
+
+  const li = el("li"); li.dataset.index = i;
+  const b = el("button",{type:"button"}, `<span class="num">${i+1}</span><span>${esc(s.title)}</span>`);
+  b.addEventListener("click", () => go(i));
+  li.appendChild(b); navEl.appendChild(li);
+});
+
+function realQs(s){ return (s.questions||[]).filter(q => q.type!=="heading"); }
+function renderHeading(q){
+  return el("div",{class:"subhead"}, `<h3>${esc(q.label)}</h3>${q.hint?`<p>${esc(q.hint)}</p>`:""}`);
+}
+function renderQuestion(q){
+  const isGroup = q.type==="radio" || q.type==="checkbox";
+  const wrap = el(isGroup ? "fieldset" : "div", {class:"q", "data-qid":q.id});
+  const labelHtml = `${esc(q.label)}${q.required?'<span class="req" aria-hidden="true">*</span>':'<span class="optional">(optional)</span>'}`;
+  if (isGroup) wrap.appendChild(el("legend",{}, labelHtml));
+  else wrap.appendChild(el("label",{class:"qlabel", for:"f-"+q.id}, labelHtml));
+  if (q.hint) wrap.appendChild(el("p",{class:"hint", id:"hint-"+q.id}, esc(q.hint)));
+
+  if (isGroup) {
+    const opts = el("div",{class:"options"});
+    const all = q.other ? [...q.options, "Other"] : q.options;
+    all.forEach((o, idx) => {
+      const id = `f-${q.id}-${idx}`;
+      const lab = el("label",{class:"opt", for:id});
+      const inp = el("input",{type:q.type, id, name:q.id, value:o});
+      const saved = state[q.id];
+      if (q.type==="radio" ? saved===o : Array.isArray(saved) && saved.includes(o)) inp.checked = true;
+      inp.addEventListener("change", () => onChoice(q, wrap, inp));
+      lab.appendChild(inp);
+      lab.appendChild(el("span",{class:"box","aria-hidden":"true"}, q.type==="radio"?dotSvg:tickSvg));
+      lab.appendChild(el("span",{}, esc(o)));
+      opts.appendChild(lab);
+    });
+    wrap.appendChild(opts);
+    if (q.other) {
+      const other = el("input",{type:"text", class:"other-input", placeholder:"Please tell us…", "aria-label":q.label+" – other"});
+      other.value = state[q.id+"_other"] || "";
+      if (Array.isArray(state[q.id]) && state[q.id].includes("Other")) other.classList.add("show");
+      other.addEventListener("input", () => { state[q.id+"_other"] = other.value; save(); flashSaved(); });
+      wrap.appendChild(other);
+    }
+  } else {
+    const attrs = {id:"f-"+q.id, name:q.id};
+    if (q.hint) attrs["aria-describedby"] = "hint-"+q.id;
+    if (q.required) attrs["aria-required"] = "true";
+    let inp;
+    if (q.type==="textarea") inp = el("textarea", attrs);
+    else { inp = el("input", {...attrs, type:q.type}); if (q.type==="number") { inp.min="0"; inp.inputMode="numeric"; } }
+    if (q.type==="email") inp.autocomplete="email";
+    if (q.type==="tel") inp.autocomplete="tel";
+    if (q.id==="contact_name") inp.autocomplete="name";
+    if (q.id==="org_name") inp.autocomplete="organization";
+    inp.value = state[q.id] || "";
+    inp.addEventListener("input", () => { state[q.id] = inp.value; save(); flashSaved(); wrap.classList.remove("invalid"); });
+    wrap.appendChild(inp);
+  }
+  wrap.appendChild(el("div",{class:"errmsg"}, q.type==="email" ? "Please enter a valid email address." : "Please answer this question."));
+  return wrap;
+}
+
+function onChoice(q, wrap, inp){
+  if (q.type==="radio") state[q.id] = inp.value;
+  else {
+    const checked = [...wrap.querySelectorAll('input[type=checkbox]:checked')].map(x=>x.value);
+    if (q.max && checked.length > q.max) {
+      inp.checked = false;
+      const hint = wrap.querySelector(".hint");
+      if (hint) { hint.textContent = `You can choose up to ${q.max}. Untick one to pick another.`; hint.style.color = "var(--error)"; setTimeout(()=>{ hint.textContent=q.hint; hint.style.color=""; }, 3000); }
+      return;
+    }
+    state[q.id] = checked;
+    const other = wrap.querySelector(".other-input");
+    if (other) { const show = checked.includes("Other"); other.classList.toggle("show", show); if (show && inp.value==="Other") other.focus(); }
+  }
+  save(); flashSaved();
+}
+
+let savedTimer;
+function flashSaved(){
+  const n = document.getElementById("savedNote");
+  n.style.opacity = "1"; n.lastChild.textContent = "Saved on this device";
+  clearTimeout(savedTimer);
+}
+
+/* ---------- navigation ---------- */
+const backBtn = document.getElementById("backBtn"), nextBtn = document.getElementById("nextBtn");
+function go(i){
+  current = Math.max(0, Math.min(i, SECTIONS.length-1));
+  document.querySelectorAll(".step").forEach((s, idx) => s.classList.toggle("active", idx===current));
+  document.querySelectorAll("#navlist li").forEach((li, idx) => {
+    li.classList.toggle("current", idx===current);
+    li.classList.toggle("done", idx<current || sectionStarted(idx));
+  });
+  const pct = Math.round((current)/(SECTIONS.length-1)*100);
+  document.getElementById("progressFill").style.width = pct + "%";
+  document.getElementById("progressLabel").textContent = `Step ${current+1} of ${SECTIONS.length}`;
+  backBtn.style.visibility = current===0 ? "hidden" : "visible";
+  const last = SECTIONS[current].review;
+  nextBtn.innerHTML = last ? "Send my answers ✓" : (current===SECTIONS.length-2 ? "Review my answers →" : "Next →");
+  if (last) buildReview();
+  document.getElementById("banner").className = "banner";
+  window.scrollTo({top: document.querySelector("main").offsetTop - 20, behavior:"smooth"});
+  const h = document.querySelector(".step.active h2"); if (h) h.focus({preventScroll:true});
+  try { localStorage.setItem(STORE_KEY+"-step", String(current)); } catch(e){}
+}
+function sectionStarted(idx){
+  const s = SECTIONS[idx]; if (!s.questions) return false;
+  return realQs(s).some(q => { const v = state[q.id]; return Array.isArray(v) ? v.length : (v && String(v).trim()); }) && idx < current;
+}
+function validStep(i){
+  const s = SECTIONS[i]; if (!s.questions) return true;
+  let firstBad = null;
+  realQs(s).forEach(q => {
+    const wrap = document.querySelector(`[data-qid="${q.id}"]`);
+    const v = (state[q.id]||"").toString().trim();
+    let bad = q.required && !v;
+    if (!bad && q.type==="email" && v) bad = !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+    wrap.classList.toggle("invalid", bad);
+    if (bad && !firstBad) firstBad = wrap;
+  });
+  if (firstBad) { firstBad.scrollIntoView({behavior:"smooth", block:"center"}); const f = firstBad.querySelector("input,textarea"); if (f) f.focus({preventScroll:true}); return false; }
+  return true;
+}
+backBtn.addEventListener("click", () => go(current-1));
+nextBtn.addEventListener("click", () => {
+  if (SECTIONS[current].review) return submit();
+  if (!validStep(current)) return;
+  go(current+1);
+});
+
+/* ---------- answers ---------- */
+function answerText(q){
+  const v = state[q.id];
+  if (Array.isArray(v)) {
+    let parts = v.filter(x => x!=="Other");
+    if (v.includes("Other")) parts.push("Other: " + (state[q.id+"_other"] || "(not specified)"));
+    return parts.join(", ");
+  }
+  return v ? String(v).trim() : "";
+}
+function collect(){
+  const out = [];
+  SECTIONS.forEach(s => realQs(s).forEach(q => out.push({section:s.title, question:q.label, answer:answerText(q)})));
+  return out;
+}
+function buildReview(){
+  const body = document.getElementById("reviewBody"); body.innerHTML = "";
+  SECTIONS.forEach((s, i) => {
+    if (!s.questions) return;
+    const box = el("div",{class:"review-section"});
+    const hd = el("header");
+    hd.appendChild(el("h3",{}, esc(s.title)));
+    const edit = el("button",{type:"button", class:"linkbtn"}, "Edit");
+    edit.addEventListener("click", () => go(i));
+    hd.appendChild(edit); box.appendChild(hd);
+    const dl = el("dl");
+    realQs(s).forEach(q => {
+      const a = answerText(q);
+      dl.appendChild(el("dt",{}, esc(q.label)));
+      dl.appendChild(el("dd", a ? {} : {class:"empty"}, a ? esc(a) : "Not answered"));
+    });
+    box.appendChild(dl); body.appendChild(box);
+  });
+}
+function plainSummary(){
+  let txt = "", last = "";
+  collect().forEach(r => { if (r.section!==last){ txt += `\n=== ${r.section.toUpperCase()} ===\n`; last = r.section; } txt += `${r.question}\n  → ${r.answer || "Not answered"}\n`; });
+  return txt.trim();
+}
+
+/* ---------- submit ---------- */
+async function submit(){
+  const banner = document.getElementById("banner");
+  if (document.querySelector('input[name="_honey"]').value) return; // bot
+  for (let i=0;i<SECTIONS.length-1;i++){ if (!validStep(i)) { go(i); setTimeout(()=>validStep(i),350); return; } }
+
+  const rows = collect();
+  const fields = {};
+  rows.forEach((r, i) => { fields[`${String(i+1).padStart(2,"0")}. [${r.section}] ${r.question}`] = r.answer || "—"; });
+  const name = state.contact_name || "", email = state.contact_email || "";
+  const subject = `${CONFIG.subject} – ${state.org_name || name}`;
+
+  let url = null, payload = null;
+  if (CONFIG.provider === "web3forms" && CONFIG.accessKey) {
+    url = "https://api.web3forms.com/submit";
+    payload = {access_key: CONFIG.accessKey, subject, from_name: name || "Questionnaire", name, email, ...fields};
+  } else if (CONFIG.provider === "formspree" && CONFIG.formspreeId) {
+    url = `https://formspree.io/f/${CONFIG.formspreeId}`;
+    payload = {_subject: subject, name, email, ...fields};
+  } else if (CONFIG.provider === "formsubmit" && CONFIG.email && !CONFIG.email.includes("yourdomain")) {
+    url = `https://formsubmit.co/ajax/${encodeURIComponent(CONFIG.email)}`;
+    payload = {_subject: subject, _template: "table", _captcha: "false", name, email, ...fields};
+  }
+  const useDb = !!(CONFIG.supabaseUrl && CONFIG.supabaseKey);
+  if (!url && !useDb) return notConfigured();
+
+  nextBtn.disabled = true; nextBtn.textContent = "Sending…";
+  try {
+    let saved = false, emailed = false;
+    if (useDb) {
+      try {
+        const r = await fetch(`${CONFIG.supabaseUrl}/rest/v1/questionnaire_responses`, {
+          method:"POST",
+          headers:{"Content-Type":"application/json", "apikey":CONFIG.supabaseKey, "Prefer":"return=minimal"},
+          body: JSON.stringify({part: CONFIG.part, contact_name: name, contact_email: email, org_name: state.org_name || "", answers: rows, user_agent: navigator.userAgent.slice(0, 500)})
+        });
+        saved = r.ok;
+      } catch(e) {}
+    }
+    if (url) {
+      try {
+        const res = await fetch(url, {method:"POST", headers:{"Content-Type":"application/json","Accept":"application/json"}, body: JSON.stringify(payload)});
+        const data = await res.json().catch(()=>({}));
+        emailed = res.ok && data.success !== false && data.success !== "false";
+      } catch(e) {}
+    }
+    if (!saved && !emailed) throw new Error("Send failed");
+    showThanks();
+  } catch(err) {
+    banner.className = "banner error";
+    banner.innerHTML = "Sorry, your answers didn’t send. Please check your internet connection and try again. If it keeps happening, use <a href='#' id='dlLink'>Download a copy</a> and email it to us.";
+    document.getElementById("dlLink").addEventListener("click", e => { e.preventDefault(); downloadCopy(); });
+    nextBtn.disabled = false; nextBtn.textContent = "Try sending again";
+  }
+}
+function notConfigured(){
+  const banner = document.getElementById("banner");
+  banner.className = "banner error";
+  banner.innerHTML = "This form isn’t connected to an email address yet (see the CONFIG section in the file). For now you can <a href='#' id='dlLink'>download a copy of your answers</a>.";
+  document.getElementById("dlLink").addEventListener("click", e => { e.preventDefault(); downloadCopy(); });
+}
+function downloadCopy(){
+  const blob = new Blob([plainSummary()], {type:"text/plain"});
+  const a = el("a",{href:URL.createObjectURL(blob), download:`questionnaire-${(state.org_name||"answers").replace(/[^a-z0-9]+/gi,"-").toLowerCase()}.txt`});
+  document.body.appendChild(a); a.click(); a.remove();
+}
+function showThanks(){
+  document.getElementById("progress").style.display = "none";
+  document.getElementById("actions").style.display = "none";
+  document.getElementById("banner").className = "banner";
+  stepsEl.innerHTML = `
+    <div class="thanks">
+      <div class="tick"><svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="#1F5F5B" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
+      <h2>Thank you${state.contact_name ? ", " + esc(state.contact_name.split(" ")[0]) : ""}!</h2>
+      <p>Your answers have been sent. We’ll read them carefully and be in touch within two working days to arrange a short call.</p>
+      <p>If you have paper or digital forms you use today, please email us blank copies — they really help.</p>
+      <p style="margin-top:20px"><button type="button" class="btn btn-ghost" id="keepCopy">Download a copy for my records</button></p>
+    </div>`;
+  document.getElementById("keepCopy").addEventListener("click", downloadCopy);
+  document.querySelectorAll("#navlist li").forEach(li => li.classList.add("done"));
+  try { localStorage.removeItem(STORE_KEY); localStorage.removeItem(STORE_KEY+"-step"); } catch(e){}
+  window.scrollTo({top:0, behavior:"smooth"});
+}
+
+/* ---------- start ---------- */
+let startAt = 0;
+try { startAt = parseInt(localStorage.getItem(STORE_KEY+"-step") || "0", 10) || 0; } catch(e){}
+go(startAt);
+</script>
+</body>
+</html>
