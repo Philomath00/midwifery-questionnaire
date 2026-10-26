@@ -371,7 +371,7 @@ function go(i){
     li.classList.toggle("current", idx===current);
     li.classList.toggle("done", idx<current || sectionStarted(idx));
   });
-  const pct = Math.round((current)/(SECTIONS.length-1)*100);
+  const pct = Math.round((current+1)/SECTIONS.length*100);
   document.getElementById("progressFill").style.width = pct + "%";
   document.getElementById("progressLabel").textContent = `Step ${current+1}/${SECTIONS.length}`;
   backBtn.style.visibility = current===0 ? "hidden" : "visible";
