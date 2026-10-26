@@ -141,6 +141,10 @@
   .thanks .tick{width:72px;height:72px;margin:0 auto 20px;border-radius:50%;background:var(--lime);display:grid;place-items:center}
   .thanks h2{font-size:30px;margin-bottom:12px}
   .thanks p{color:var(--muted);max-width:480px;margin:0 auto 10px}
+  .thanks .tick-soft{background:var(--soft)}
+  .small-note{font-size:13px!important;color:var(--muted-2)!important;margin-top:14px!important}
+  .linklike{all:unset;cursor:pointer;text-decoration:underline;color:var(--muted)}
+  .linklike:focus-visible{outline:3px solid var(--lime-strong)}
   .hp{position:absolute;left:-9999px}
 
   /* Below the card */
@@ -244,6 +248,17 @@ const SECTIONS = [
 const STORE_KEY = "midwife-q-part1";
 let state = {}, current = 0;
 try { state = JSON.parse(localStorage.getItem(STORE_KEY) || "{}") || {}; } catch(e){ state = {}; }
+
+/* Part 2 only opens after Part 1 has been sent on this device */
+const DONE_KEY = "midwife-q-part1-done";
+let part1Done = null;
+try { part1Done = JSON.parse(localStorage.getItem(DONE_KEY) || "null"); } catch(e){}
+if (!part1Done && location.hash === "#continue") part1Done = {};
+if (CONFIG.part === "part2" && part1Done) {
+  if (!state.contact_name) state.contact_name = part1Done.name || "";
+  if (!state.contact_email) state.contact_email = part1Done.email || "";
+  if (!state.org_name) state.org_name = part1Done.org || "";
+}
 function save(){
   try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch(e){}
 }
@@ -524,6 +539,33 @@ function showThanks(){
   document.getElementById("topbar").style.display = "none";
   document.getElementById("actions").style.display = "none";
   document.getElementById("banner").className = "banner";
+  if (CONFIG.part === "part1") {
+    try { localStorage.setItem(DONE_KEY, JSON.stringify({name: state.contact_name || "", email: state.contact_email || "", org: state.org_name || "", at: Date.now()})); } catch(e){}
+    const first = state.contact_name ? ", " + esc(state.contact_name.split(" ")[0]) : "";
+    stepsEl.innerHTML = `
+    <div class="thanks">
+      <div class="tick"><svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="#16220A" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
+      <h2>Part 1 sent — thank you${first}!</h2>
+      <p>Next is <strong>Part 2: the details</strong> of how you’ll work. It takes about 15–20 minutes, and you can stop and come back at any time.</p>
+      <p style="margin-top:22px"><a class="btn btn-primary" id="startPart2" href="/part-2/#continue" style="text-decoration:none;display:inline-block">Start Part 2</a></p>
+      <p class="small-note">Opening Part 2 in <span id="countdown">6</span> seconds… <button type="button" class="linklike" id="stayHere">Stay on this page</button></p>
+      <p class="small-note"><button type="button" class="linklike" id="keepCopy">Download a copy of my Part 1 answers</button></p>
+    </div>`;
+    document.getElementById("keepCopy").addEventListener("click", downloadCopy);
+    let left = 6;
+    const timer = setInterval(() => {
+      left -= 1;
+      const c = document.getElementById("countdown"); if (c) c.textContent = String(left);
+      if (left <= 0) { clearInterval(timer); location.href = "/part-2/#continue"; }
+    }, 1000);
+    document.getElementById("stayHere").addEventListener("click", e => {
+      clearInterval(timer);
+      e.target.closest("p").textContent = "Whenever you’re ready, press Start Part 2.";
+    });
+    try { localStorage.removeItem(STORE_KEY); localStorage.removeItem(STORE_KEY+"-step"); } catch(e){}
+    window.scrollTo({top:0, behavior:"smooth"});
+    return;
+  }
   stepsEl.innerHTML = `
     <div class="thanks">
       <div class="tick"><svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="#16220A" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
@@ -542,7 +584,21 @@ function showThanks(){
 let startAt = 0;
 try { startAt = parseInt(localStorage.getItem(STORE_KEY+"-step") || "0", 10) || 0; } catch(e){}
 document.getElementById("brandmark").textContent = PAGE.label;
-go(startAt);
+if (CONFIG.part === "part2" && !part1Done) showGate(); else go(startAt);
+
+function showGate(){
+  document.getElementById("topbar").style.display = "none";
+  document.getElementById("progress").style.display = "none";
+  document.getElementById("actions").style.display = "none";
+  stepsEl.innerHTML = `
+    <div class="thanks">
+      <div class="tick tick-soft"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#16220A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></div>
+      <h2>Please complete Part 1 first</h2>
+      <p>Part 2 opens automatically once you’ve sent Part 1. Part 1 takes about 10 minutes.</p>
+      <p style="margin-top:22px"><a class="btn btn-primary" href="/part-1/" style="text-decoration:none;display:inline-block">Go to Part 1</a></p>
+      <p class="small-note">Already sent Part 1 on another phone or computer? Please open this page on that same device, or contact us and we’ll help.</p>
+    </div>`;
+}
 </script>
 </body>
 </html>
