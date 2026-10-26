@@ -29,194 +29,152 @@
 -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Nunito+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#FAF6F1; --card:#FFFFFF; --ink:#22302F; --muted:#5E6B69; --line:#E6DED4;
-    --primary:#1F5F5B; --primary-dark:#174744; --primary-soft:#E4EFEC;
-    --blush:#F3D9CF; --blush-ink:#8A4A39; --focus:#E0A15E; --error:#B3412E;
-    --radius:16px; --shadow:0 10px 30px rgba(34,48,47,.08);
+    --ink:#0E0F12; --muted:#868A94; --muted-2:#A3A6AF;
+    --soft:#F4F4F8; --field:#FBFBFD; --line:#D5D7E4; --chip-line:#C9CBDD; --chip-hover:#A7AAC4;
+    --lime:#C4F57E; --lime-strong:#B1EC5E; --lime-ink:#16220A; --lime-wash:#F3FCE6;
+    --error:#D2463A; --card-radius:40px; --radius:16px;
   }
   *{box-sizing:border-box}
   html{scroll-behavior:smooth}
-  body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 "Nunito Sans",system-ui,-apple-system,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased}
-  h1,h2,h3{font-family:Fraunces,Georgia,serif;font-weight:600;line-height:1.2;margin:0}
-  a{color:var(--primary)}
-  .wrap{max-width:1080px;margin:0 auto;padding:0 16px}
+  body{margin:0;min-height:100vh;color:var(--ink);font:16px/1.55 "Inter",system-ui,-apple-system,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased;
+    background:linear-gradient(180deg,#EFF0F3 0%,#E2E4E8 55%,#D6D9DE 100%) fixed}
+  h1,h2,h3{font-family:"Bricolage Grotesque","Inter",system-ui,sans-serif;font-weight:700;letter-spacing:-.02em;line-height:1.15;margin:0}
+  a{color:var(--ink)}
 
-  /* Header */
-  header.hero{background:linear-gradient(160deg,#1F5F5B 0%,#2C7A73 60%,#3B8E85 100%);color:#fff;padding:40px 0 88px;position:relative;overflow:hidden}
-  header.hero::after{content:"";position:absolute;right:-120px;top:-120px;width:360px;height:360px;border-radius:50%;background:rgba(243,217,207,.18)}
-  header.hero::before{content:"";position:absolute;left:-80px;bottom:-140px;width:280px;height:280px;border-radius:50%;background:rgba(255,255,255,.07)}
-  .brandline{display:flex;align-items:center;gap:10px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;font-size:13px;opacity:.9}
-  .brandline svg{width:26px;height:26px}
-  header.hero h1{font-size:clamp(28px,4.4vw,42px);margin:18px 0 10px;max-width:720px}
-  header.hero p{max-width:640px;margin:0;font-size:18px;opacity:.95}
-  .reassure{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
-  .pill{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.25);padding:6px 14px;border-radius:999px;font-size:14px}
+  .shell{max-width:680px;margin:0 auto;padding:56px 16px 48px}
+  .card{position:relative;background:linear-gradient(180deg,#FFFFFF 72%,#FAFAFD 100%);border:1px solid #DCDEE7;border-radius:var(--card-radius);
+    padding:36px 34px 32px;box-shadow:0 1px 0 #fff inset,0 40px 70px -40px rgba(24,26,44,.25)}
+  @media (max-width:560px){.shell{padding:20px 12px 32px}.card{padding:26px 18px 22px;border-radius:28px}}
 
-  /* Layout */
-  main{margin-top:-56px;position:relative;z-index:2;padding-bottom:64px}
-  .layout{display:grid;grid-template-columns:260px 1fr;gap:24px;align-items:start}
-  @media (max-width:860px){.layout{grid-template-columns:1fr}.sidebar{display:none}}
+  /* Top bar + progress */
+  .topbar{display:flex;justify-content:space-between;align-items:center;gap:12px;font-size:14px;color:var(--muted)}
+  .savednote{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--muted-2)}
+  .savednote .dot{width:7px;height:7px;border-radius:50%;background:var(--lime-strong)}
+  .progress{height:4px;background:#ECECF0;border-radius:999px;margin:12px 0 0;overflow:hidden}
+  .progress .fill{height:100%;width:0;background:var(--lime);border-radius:999px;transition:width .4s ease}
 
-  .sidebar{position:sticky;top:20px;background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px}
-  .sidebar h3{font-size:15px;font-family:"Nunito Sans",sans-serif;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin:0 0 10px}
-  .navlist{list-style:none;margin:0;padding:0}
-  .navlist button{all:unset;cursor:pointer;display:flex;gap:10px;align-items:center;width:100%;padding:8px 10px;border-radius:10px;font-size:15px;color:var(--muted)}
-  .navlist button:hover{background:var(--primary-soft);color:var(--ink)}
-  .navlist .num{flex:0 0 26px;height:26px;border-radius:50%;display:grid;place-items:center;font-size:13px;font-weight:700;background:#F1ECE5;color:var(--muted)}
-  .navlist li.done .num{background:var(--primary);color:#fff}
-  .navlist li.current button{background:var(--primary-soft);color:var(--ink);font-weight:700}
-  .navlist li.current .num{background:var(--blush);color:var(--blush-ink)}
-  .navlist button:focus-visible{outline:3px solid var(--focus)}
-
-  .card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:28px}
-  @media (max-width:560px){.card{padding:20px 16px}}
-
-  /* Progress */
-  .progress{display:flex;align-items:center;gap:14px;margin-bottom:22px}
-  .progress .bar{flex:1;height:10px;background:#EFE8DF;border-radius:999px;overflow:hidden}
-  .progress .fill{height:100%;width:0;background:linear-gradient(90deg,var(--primary),#3B8E85);border-radius:999px;transition:width .35s ease}
-  .progress .label{font-size:14px;color:var(--muted);white-space:nowrap;font-weight:600}
-
+  /* Steps */
   .step{display:none;animation:fade .3s ease}
   .step.active{display:block}
   @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
-  .step-head{margin-bottom:22px}
-  .step-head .eyebrow{color:var(--blush-ink);font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:.08em}
-  .step-head h2{font-size:clamp(24px,3vw,30px);margin:6px 0 8px}
-  .step-head p{margin:0;color:var(--muted)}
+  .step-head{margin:26px 0 28px}
+  .step-head h2{font-size:clamp(26px,4.2vw,32px);outline:none}
+  .step-head p{margin:12px 0 0;color:var(--muted);font-size:16px}
 
   /* Questions */
   .q{border:0;margin:0 0 26px;padding:0;min-width:0}
-  .q > .qlabel, .q > legend{display:block;font-weight:700;font-size:17px;margin-bottom:4px;padding:0}
+  .q > .qlabel,.q > legend{display:block;font-weight:500;font-size:15px;margin-bottom:10px;padding:0;color:var(--ink)}
   .req{color:var(--error);margin-left:2px}
-  .optional{font-weight:400;color:var(--muted);font-size:14px;margin-left:6px}
-  .hint{color:var(--muted);font-size:15px;margin:0 0 10px}
+  .optional{font-weight:400;color:var(--muted-2);font-size:13px;margin-left:6px}
+  .hint{color:var(--muted);font-size:14px;margin:-4px 0 12px}
   input[type=text],input[type=email],input[type=tel],input[type=number],input[type=date],textarea,select{
-    width:100%;font:inherit;color:var(--ink);background:#FFFDFB;border:1.5px solid var(--line);border-radius:12px;padding:12px 14px;transition:border-color .15s, box-shadow .15s}
-  textarea{min-height:110px;resize:vertical}
-  input:focus,textarea:focus,select:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 4px rgba(31,95,91,.15)}
+    width:100%;font:inherit;font-size:16px;color:var(--ink);background:var(--field);border:1px solid var(--line);border-radius:var(--radius);
+    padding:14px 16px;transition:border-color .15s,box-shadow .15s;-webkit-appearance:none;appearance:none}
+  input::placeholder,textarea::placeholder{color:var(--muted-2)}
+  textarea{min-height:120px;resize:vertical}
+  input:focus,textarea:focus,select:focus{outline:none;border-color:var(--lime-strong);box-shadow:0 0 0 4px rgba(196,245,126,.45);background:#fff}
   .q.invalid input,.q.invalid textarea{border-color:var(--error)}
-  .errmsg{display:none;color:var(--error);font-size:14px;margin-top:6px;font-weight:600}
+  .errmsg{display:none;color:var(--error);font-size:13px;margin-top:8px;font-weight:500}
   .q.invalid .errmsg{display:block}
 
-  .options{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px}
-  .opt{position:relative;display:flex;align-items:flex-start;gap:12px;padding:12px 14px;border:1.5px solid var(--line);border-radius:12px;background:#FFFDFB;cursor:pointer;transition:all .15s;font-size:16px;line-height:1.35}
-  .opt:hover{border-color:#C9BBAA;background:#FFF}
+  /* Pill chips */
+  .options{display:flex;flex-wrap:wrap;gap:10px}
+  .opt{position:relative;display:inline-flex;align-items:center;gap:10px;padding:11px 20px;border:1px solid var(--chip-line);border-radius:999px;
+    background:#fff;cursor:pointer;font-size:16px;line-height:1.3;color:var(--ink);transition:background .15s,border-color .15s,padding .15s}
+  .opt:hover{border-color:var(--chip-hover)}
   .opt input{position:absolute;opacity:0;pointer-events:none}
-  .opt .box{flex:0 0 22px;height:22px;margin-top:1px;border:2px solid #B9AC9C;border-radius:6px;display:grid;place-items:center;background:#fff;transition:all .15s}
-  .opt input[type=radio] + .box{border-radius:50%}
-  .opt .box svg{width:14px;height:14px;opacity:0;transform:scale(.6);transition:all .15s}
-  .opt input:checked + .box{background:var(--primary);border-color:var(--primary)}
-  .opt input:checked + .box svg{opacity:1;transform:none}
-  .opt:has(input:checked){border-color:var(--primary);background:var(--primary-soft)}
-  .opt:has(input:focus-visible){outline:3px solid var(--focus);outline-offset:2px}
-  .other-input{margin-top:10px;display:none}
+  .opt .box{display:none;flex:0 0 22px;width:22px;height:22px;border-radius:50%;background:var(--lime);place-items:center}
+  .opt .box svg{width:13px;height:13px}
+  .opt:has(input:checked){background:var(--soft);border-color:#D9DAE6;padding-left:11px}
+  .opt:has(input:checked) .box{display:grid}
+  .opt:has(input:focus-visible){outline:3px solid var(--lime-strong);outline-offset:2px}
+  .other-input{margin-top:12px;display:none}
   .other-input.show{display:block}
 
-  /* Buttons */
-  .actions{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:28px;padding-top:22px;border-top:1px solid var(--line);flex-wrap:wrap}
-  .btn{font:inherit;font-weight:700;border:0;border-radius:12px;padding:14px 26px;cursor:pointer;transition:all .15s;display:inline-flex;align-items:center;gap:8px}
-  .btn-primary{background:var(--primary);color:#fff}
-  .btn-primary:hover{background:var(--primary-dark)}
-  .btn-ghost{background:transparent;color:var(--primary);border:1.5px solid var(--line)}
-  .btn-ghost:hover{background:var(--primary-soft)}
-  .btn:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
-  .btn[disabled]{opacity:.6;cursor:wait}
-  .savednote{font-size:14px;color:var(--muted);display:flex;align-items:center;gap:6px}
-  .savednote .dot{width:8px;height:8px;border-radius:50%;background:#7DB8A5}
-
   /* In-page subheadings */
-  .subhead{margin:38px 0 20px;padding-top:26px;border-top:1px dashed var(--line)}
-  .subhead h3{font-size:22px;color:var(--primary)}
-  .subhead p{margin:4px 0 0;color:var(--muted);font-size:15px}
+  .subhead{margin:36px 0 22px;padding-top:28px;border-top:1px solid #EDEEF3}
+  .subhead h3{font-size:21px}
+  .subhead p{margin:6px 0 0;color:var(--muted);font-size:14px}
 
   /* Welcome tips */
-  .tips{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin:0 0 26px}
-  .tip{background:var(--primary-soft);border-radius:12px;padding:14px 16px;font-size:15px}
-  .tip strong{display:block;font-size:16px;margin-bottom:2px}
+  .tips{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin:0 0 30px}
+  .tip{background:var(--soft);border-radius:18px;padding:14px 16px;font-size:14px;color:var(--muted)}
+  .tip strong{display:block;font-size:15px;font-weight:600;color:var(--ink);margin-bottom:2px}
+
+  /* Buttons */
+  .actions{display:flex;justify-content:flex-end;align-items:center;gap:12px;margin-top:34px}
+  .btn{font:inherit;font-size:16px;font-weight:600;border:0;border-radius:var(--radius);padding:15px 32px;min-width:112px;cursor:pointer;transition:background .15s,transform .1s;color:var(--ink)}
+  .btn:active{transform:scale(.98)}
+  .btn-primary{background:var(--lime)}
+  .btn-primary:hover{background:var(--lime-strong)}
+  .btn-ghost{background:#EFEFF3}
+  .btn-ghost:hover{background:#E5E5EB}
+  .btn:focus-visible{outline:3px solid var(--lime-strong);outline-offset:2px}
+  .btn[disabled]{opacity:.6;cursor:wait}
+  @media (max-width:420px){.actions .btn{flex:1;min-width:0;padding:15px 16px}}
 
   /* Review */
-  .review-section{border:1.5px solid var(--line);border-radius:14px;margin-bottom:14px;overflow:hidden}
-  .review-section header{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;background:#FBF7F2}
-  .review-section h3{font-size:18px}
-  .review-section dl{margin:0;padding:6px 16px 12px}
-  .review-section dt{font-weight:700;font-size:15px;margin-top:10px}
-  .review-section dd{margin:2px 0 0;color:var(--muted);font-size:15px;white-space:pre-wrap}
-  .review-section dd.empty{font-style:italic;opacity:.7}
-  .linkbtn{all:unset;cursor:pointer;color:var(--primary);font-weight:700;font-size:14px}
-  .linkbtn:focus-visible{outline:3px solid var(--focus)}
-  .callout{background:var(--blush);color:#5A2F24;border-radius:12px;padding:14px 16px;margin:0 0 20px;font-size:15px}
+  .review-section{border:1px solid #E6E7EF;border-radius:20px;margin-bottom:12px;overflow:hidden}
+  .review-section header{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;background:#F7F7FA}
+  .review-section h3{font-size:17px}
+  .review-section dl{margin:0;padding:4px 18px 14px}
+  .review-section dt{font-weight:500;font-size:14px;margin-top:12px}
+  .review-section dd{margin:2px 0 0;color:var(--muted);font-size:14px;white-space:pre-wrap}
+  .review-section dd.empty{font-style:italic;color:var(--muted-2)}
+  .linkbtn{all:unset;cursor:pointer;font-weight:600;font-size:14px;padding:6px 14px;border-radius:999px;background:#fff;border:1px solid var(--chip-line)}
+  .linkbtn:hover{border-color:var(--chip-hover)}
+  .linkbtn:focus-visible{outline:3px solid var(--lime-strong)}
+  .callout{background:var(--lime-wash);border:1px solid #DDF3BF;color:#2A3815;border-radius:18px;padding:14px 18px;margin:0 0 20px;font-size:14px}
 
-  .banner{display:none;border-radius:12px;padding:14px 16px;margin-top:16px;font-weight:600}
-  .banner.error{display:block;background:#FBE4DF;color:var(--error)}
+  .banner{display:none;border-radius:16px;padding:14px 16px;margin-top:16px;font-weight:500;font-size:14px}
+  .banner.error{display:block;background:#FDECEA;color:var(--error)}
 
   /* Thank you */
-  .thanks{text-align:center;padding:30px 10px}
-  .thanks .tick{width:76px;height:76px;margin:0 auto 18px;border-radius:50%;background:var(--primary-soft);display:grid;place-items:center}
-  .thanks h2{font-size:30px;margin-bottom:10px}
-  .thanks p{color:var(--muted);max-width:520px;margin:0 auto 10px}
+  .thanks{text-align:center;padding:30px 6px 10px}
+  .thanks .tick{width:72px;height:72px;margin:0 auto 20px;border-radius:50%;background:var(--lime);display:grid;place-items:center}
+  .thanks h2{font-size:30px;margin-bottom:12px}
+  .thanks p{color:var(--muted);max-width:480px;margin:0 auto 10px}
   .hp{position:absolute;left:-9999px}
 
-  footer{text-align:center;color:var(--muted);font-size:14px;padding:0 16px 40px}
+  /* Below the card */
+  .brandmark{text-align:center;margin:30px 0 6px;font-size:14px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#3E414A}
+  .footnote{text-align:center;margin:0;color:var(--muted);font-size:13px}
 
   @media print{
-    header.hero,.sidebar,.actions,.progress,footer{display:none!important}
-    main{margin:0}.card{box-shadow:none;padding:0}
-    .step{display:block!important}
+    body{background:#fff}.topbar,.progress,.actions,.brandmark,.footnote{display:none!important}
+    .card{box-shadow:none;border:0;padding:0}.step{display:block!important}
   }
 </style>
 </head>
 <body>
 
-<header class="hero">
-  <div class="wrap">
-    <div class="brandline">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-4.4-9.3-9A5.3 5.3 0 0 1 12 6.2 5.3 5.3 0 0 1 21.3 12C19 16.6 12 21 12 21z"/></svg>
-      Part 2 of 2 · The details
+<main class="shell">
+  <div class="card">
+    <div class="topbar" id="topbar">
+      <span id="progressLabel">Step 1</span>
+      <span class="savednote" id="savedNote"><span class="dot"></span>Saved on this device</span>
     </div>
-    <h1>Now, the details of how you’ll work</h1>
-    <p>These questions help us design each part of your system. You can stop and come back at any time — your answers are saved on this device.</p>
-    <div class="reassure">
-      <span class="pill">About 15–20 minutes</span>
-      <span class="pill">Answers save as you go</span>
-      <span class="pill">“Not sure” is always fine</span>
+    <div class="progress" id="progress"><div class="fill" id="progressFill"></div></div>
+
+    <form id="qform" novalidate>
+      <div id="steps"></div>
+      <!-- spam trap: leave empty -->
+      <input type="text" name="_honey" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
+    </form>
+
+    <div class="actions" id="actions">
+      <button type="button" class="btn btn-ghost" id="backBtn">Back</button>
+      <button type="button" class="btn btn-primary" id="nextBtn">Next</button>
     </div>
+    <div class="banner" id="banner" role="alert"></div>
   </div>
-</header>
 
-<main class="wrap">
-  <div class="layout">
-    <aside class="sidebar" aria-label="Sections">
-      <h3>Sections</h3>
-      <ol class="navlist" id="navlist"></ol>
-    </aside>
-
-    <div class="card">
-      <div class="progress" id="progress">
-        <div class="bar"><div class="fill" id="progressFill"></div></div>
-        <div class="label" id="progressLabel">Step 1</div>
-      </div>
-
-      <form id="qform" novalidate>
-        <div id="steps"></div>
-        <!-- spam trap: leave empty -->
-        <input type="text" name="_honey" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
-      </form>
-
-      <div class="actions" id="actions">
-        <button type="button" class="btn btn-ghost" id="backBtn">← Back</button>
-        <span class="savednote" id="savedNote"><span class="dot"></span>Saved on this device</span>
-        <button type="button" class="btn btn-primary" id="nextBtn">Next →</button>
-      </div>
-      <div class="banner" id="banner" role="alert"></div>
-    </div>
-  </div>
+  <p class="brandmark" id="brandmark">Project questionnaire</p>
+  <p class="footnote">Your answers are only sent when you press <strong>Send my answers</strong> on the last step.</p>
 </main>
-
-<footer>Your answers are only sent when you press <strong>Send my answers</strong> on the last page.</footer>
 
 <script>
 /* =========================== SETTINGS =========================== */
@@ -231,6 +189,7 @@ const CONFIG = {
   supabaseKey: "sb_publishable_KPIHAskgUCApDZ0LXmopcA_BwfR7kGS",   // publishable key – safe in the browser
   part: "part2"
 };
+const PAGE = { label: "Project questionnaire · Part 2 of 2", time: "About 15–20 minutes" };
 /* ================================================================ */
 
 const NS = ["Not sure"];
@@ -301,8 +260,8 @@ function save(){
   try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch(e){}
 }
 
-const tickSvg = '<svg viewBox="0 0 16 16" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.2 3L13 4.5"/></svg>';
-const dotSvg  = '<svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="4" fill="#fff"/></svg>';
+const tickSvg = '<svg viewBox="0 0 16 16" fill="none" stroke="#16220A" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.2 3L13 4.5"/></svg>';
+const dotSvg  = tickSvg;
 
 function el(tag, attrs={}, html){ const e=document.createElement(tag); for(const k in attrs){ if(k==="class") e.className=attrs[k]; else e.setAttribute(k,attrs[k]); } if(html!==undefined) e.innerHTML=html; return e; }
 function esc(s){ return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
@@ -314,14 +273,14 @@ const navEl = document.getElementById("navlist");
 SECTIONS.forEach((s, i) => {
   const step = el("section", {class:"step", "data-index":i, "aria-labelledby":"h-"+s.id});
   const head = el("div", {class:"step-head"});
-  head.innerHTML = `<div class="eyebrow">Step ${i+1} of ${SECTIONS.length}</div><h2 id="h-${s.id}" tabindex="-1">${esc(s.title)}</h2>${s.intro?`<p>${esc(s.intro)}</p>`:""}`;
+  head.innerHTML = `<h2 id="h-${s.id}" tabindex="-1">${esc(s.title)}</h2>${s.intro?`<p>${esc(s.intro)}</p>`:""}`;
   step.appendChild(head);
 
   if (s.welcome) {
     const tips = el("div",{class:"tips"});
     tips.innerHTML = `
-      <div class="tip"><strong>Take your time</strong>Your answers are saved on this device, so you can stop and come back later.</div>
-      <div class="tip"><strong>Short answers are fine</strong>A few words or bullet points are perfect.</div>
+      <div class="tip"><strong>${esc(PAGE.time)}</strong>Answers save on this device, so you can stop and come back later.</div>
+      <div class="tip"><strong>“Not sure” is fine</strong>Short answers or bullet points are perfect.</div>
       <div class="tip"><strong>No patient details</strong>Please don’t include any real patient names or information.</div>`;
     step.appendChild(tips);
   }
@@ -334,10 +293,12 @@ SECTIONS.forEach((s, i) => {
   }
   stepsEl.appendChild(step);
 
-  const li = el("li"); li.dataset.index = i;
-  const b = el("button",{type:"button"}, `<span class="num">${i+1}</span><span>${esc(s.title)}</span>`);
-  b.addEventListener("click", () => go(i));
-  li.appendChild(b); navEl.appendChild(li);
+  if (navEl) {
+    const li = el("li"); li.dataset.index = i;
+    const b = el("button",{type:"button"}, `<span class="num">${i+1}</span><span>${esc(s.title)}</span>`);
+    b.addEventListener("click", () => go(i));
+    li.appendChild(b); navEl.appendChild(li);
+  }
 });
 
 function realQs(s){ return (s.questions||[]).filter(q => q.type!=="heading"); }
@@ -429,10 +390,10 @@ function go(i){
   });
   const pct = Math.round((current)/(SECTIONS.length-1)*100);
   document.getElementById("progressFill").style.width = pct + "%";
-  document.getElementById("progressLabel").textContent = `Step ${current+1} of ${SECTIONS.length}`;
+  document.getElementById("progressLabel").textContent = `Step ${current+1}/${SECTIONS.length}`;
   backBtn.style.visibility = current===0 ? "hidden" : "visible";
   const last = SECTIONS[current].review;
-  nextBtn.innerHTML = last ? "Send my answers ✓" : (current===SECTIONS.length-2 ? "Review my answers →" : "Next →");
+  nextBtn.textContent = last ? "Send my answers" : (current===SECTIONS.length-2 ? "Review answers" : "Next");
   if (last) buildReview();
   document.getElementById("banner").className = "banner";
   window.scrollTo({top: document.querySelector("main").offsetTop - 20, behavior:"smooth"});
@@ -572,11 +533,12 @@ function downloadCopy(){
 }
 function showThanks(){
   document.getElementById("progress").style.display = "none";
+  document.getElementById("topbar").style.display = "none";
   document.getElementById("actions").style.display = "none";
   document.getElementById("banner").className = "banner";
   stepsEl.innerHTML = `
     <div class="thanks">
-      <div class="tick"><svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="#1F5F5B" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
+      <div class="tick"><svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="#16220A" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
       <h2>Thank you${state.contact_name ? ", " + esc(state.contact_name.split(" ")[0]) : ""}!</h2>
       <p>Your answers have been sent. We’ll read them carefully and be in touch within two working days to arrange a short call.</p>
       <p>If you have paper or digital forms you use today, please email us blank copies — they really help.</p>
@@ -591,6 +553,7 @@ function showThanks(){
 /* ---------- start ---------- */
 let startAt = 0;
 try { startAt = parseInt(localStorage.getItem(STORE_KEY+"-step") || "0", 10) || 0; } catch(e){}
+document.getElementById("brandmark").textContent = PAGE.label;
 go(startAt);
 </script>
 </body>
